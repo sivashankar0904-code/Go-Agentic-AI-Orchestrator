@@ -1,6 +1,7 @@
 import json
 import logging
 import threading
+import uuid
 from kafka import KafkaConsumer
 from app.core.config import settings
 
@@ -13,9 +14,9 @@ def _consume():
     consumer = KafkaConsumer(
         settings.kafka_topic,
         bootstrap_servers=settings.kafka_broker,
-        group_id=f"{settings.app_name}-group",
+        group_id=f"{settings.app_name}-{uuid.uuid4()}",
         value_deserializer=lambda v: json.loads(v.decode("utf-8")),
-        auto_offset_reset="earliest",
+        auto_offset_reset="latest",
     )
     logger.info("Consuming from topic: %s", settings.kafka_topic)
     for record in consumer:
